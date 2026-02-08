@@ -1,66 +1,36 @@
-import React, { createContext, useState, useEffect } from "react";
-import authApi from "../api/authApi";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext();   // ✅ Export added
 
-const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [user, setUser] = useState(null); // Logged-in user info
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
 
-  // Load logged user details if token exists
+  // Restore login session on refresh
   useEffect(() => {
-    const loadUser = async () => {
-      if (token) {
-        try {
-          const response = await authApi.getLoggedUser();
-          setUser(response.data);
-        } catch (err) {
-          console.error("Failed to fetch user:", err);
-          logout();
-        }
-      }
-      setLoading(false);
-    };
+    const savedUser = sessionStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
-    loadUser();
-  }, [token]);
-
-  // Login function
-  const login = async (credentials) => {
-    const response = await authApi.login(credentials);
-
-    const jwt = response.data.token;
-
-    localStorage.setItem("token", jwt);
-    setToken(jwt);
-
-    // fetch logged user
-    const userResp = await authApi.getLoggedUser();
-    setUser(userResp.data);
+  // Login function (store user + token)
+  const login = (userData) => {
+    setUser(userData);
+    sessionStorage.setItem("user", JSON.stringify(userData));
   };
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
     setUser(null);
+    sessionStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        token,
-        user,
-        loading,
-        login,
-        logout,
-        isAuthenticated: !!token,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthProvider;
+// Custom hook
+export const useAuth = () => useContext(AuthContext);

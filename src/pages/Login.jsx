@@ -1,10 +1,10 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth(); // ✅ FIXED
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -19,12 +19,14 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      await login(credentials);
 
-      const role = localStorage.getItem("role"); // optional if stored
-      if (role === "ADMIN") navigate("/dashboard/admin");
+    try {
+      const user = await login(credentials); // call context login()
+
+      // Example role-based routing
+      if (user.role === "ADMIN") navigate("/dashboard/admin");
       else navigate("/dashboard/customer");
+
     } catch (err) {
       setError("Invalid username or password");
     }
