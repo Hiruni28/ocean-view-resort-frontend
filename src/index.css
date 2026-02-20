@@ -1,0 +1,70 @@
+
+@import "tailwindcss";
+
+/* Bill print settings */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .bill-print-area,
+  .bill-print-area * {
+    visibility: visible;
+  }
+
+  .bill-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 40px;
+    background: white;
+  }
+}
+
+/* Bill styles */
+
+.bill-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.bill-subtitle {
+  text-align: center;
+  color: #555;
+}
+
+.bill-address {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.bill-heading {
+  font-size: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.bill-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.bill-footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+}
