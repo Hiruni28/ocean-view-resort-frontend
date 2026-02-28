@@ -47,8 +47,11 @@ export default function CustomerHome() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl transition-all ${scrolled ? "bg-gradient-to-br from-cyan-500 to-blue-600" : "bg-white/20 backdrop-blur-sm"}`}>
-              <Hotel className={`w-8 h-8 ${scrolled ? "text-white" : "text-white"}`} />
+           <div className="w-18 h-18 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <img 
+                src="/logo.png" 
+                alt="Ocean View Resort Logo" 
+              />
             </div>
             <span
               className={`text-2xl font-bold transition-colors ${
