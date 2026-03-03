@@ -139,8 +139,8 @@ export default function CustomerLogin() {
       setMessage({
         type: "error",
         text:
-          error.response?.data?.message ||
-          `${isLogin ? "" : "Registration"} Invalid username or password.`,
+        error.response?.data?.message ||
+        `${isLogin ? "" : "Registration"} Invalid username or password.`,
       });
     } finally {
       setLoading(false);
@@ -288,7 +288,7 @@ export default function CustomerLogin() {
           <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10"></div>
             <div className="relative z-10">
-              <div className="w-24 h-24 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <div className="w-22 h-22 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
               <img 
                 src="/logo.png" 
                 alt="Ocean View Resort Logo" 
