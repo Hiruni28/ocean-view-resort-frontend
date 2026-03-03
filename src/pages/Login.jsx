@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { User, Lock, AlertCircle, KeyRound, LogIn } from "lucide-react";
+import { User, Lock, AlertCircle, LogIn } from "lucide-react";
 
 export default function Login({ setLogin }) {
   const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Reset Password States
   const [showReset, setShowReset] = useState(false);
@@ -19,6 +21,7 @@ export default function Login({ setLogin }) {
 
   const submit = async () => {
     setError("");
+    setSuccess("");
 
     if (!username || !password) {
       setError("Please fill all required fields");
@@ -27,17 +30,23 @@ export default function Login({ setLogin }) {
 
     setLoading(true);
     try {
-      const url = "http://localhost:8080/api/admin/login";
-      const payload = { username, password };
+      const res = await axios.post(
+        "http://localhost:8080/api/admin/login",
+        { username, password },
+        { validateStatus: () => true }
+      );
 
-      const res = await axios.post(url, payload, { validateStatus: () => true });
-
-      if (res.status === 200 && res.data !== "FAILED") {
+      if (res.status === 200) {
+        setSuccess("Login successful!");
         localStorage.setItem("token", res.data);
         localStorage.setItem("adminUsername", username);
         setLogin(true);
-        navigate("/admin/rooms");
-      } else if (res.status === 401 || res.data === "FAILED") {
+
+        // Navigate after 1.2s to show success message
+        setTimeout(() => {
+          navigate("/admin/rooms");
+        }, 1200);
+      } else if (res.status === 401) {
         setError("Invalid username or password!");
       } else {
         setError("Server error. Please try again later.");
@@ -53,7 +62,6 @@ export default function Login({ setLogin }) {
     if (e.key === "Enter") submit();
   };
 
-  // Reset Password Function
   const resetPassword = async () => {
     setResetMessage("");
     setResetSuccess(false);
@@ -64,10 +72,11 @@ export default function Login({ setLogin }) {
     }
 
     try {
-      const url = "http://localhost:8080/api/admin/reset-password";
-      const payload = { username: resetUsername, newPassword };
-
-      const res = await axios.post(url, payload, { validateStatus: () => true });
+      const res = await axios.post(
+        "http://localhost:8080/api/admin/reset-password",
+        { username: resetUsername, newPassword },
+        { validateStatus: () => true }
+      );
 
       if (res.status === 200 && res.data === "PASSWORD_UPDATED") {
         setResetMessage("Password updated successfully!");
@@ -105,7 +114,7 @@ export default function Login({ setLogin }) {
           {/* Header */}
           <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-8 text-center">
             <div className="relative z-10">
-              <div className="w-24 h-24 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <div className="w-22 h-22 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
                 <img src="/logo.png" alt="Ocean View Resort Logo" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Ocean View Resort</h2>
@@ -123,6 +132,14 @@ export default function Login({ setLogin }) {
               <div className="mb-6 p-4 rounded-xl bg-red-50 text-red-700 border-2 border-red-200 flex items-center shadow-sm">
                 <AlertCircle className="w-5 h-5 mr-2" />
                 <span className="text-sm font-semibold">{error}</span>
+              </div>
+            )}
+
+            {/* Success */}
+            {success && (
+              <div className="mb-6 p-4 rounded-xl bg-green-50 text-green-700 border-2 border-green-200 flex items-center shadow-sm">
+                <LogIn className="w-5 h-5 mr-2" />
+                <span className="text-sm font-semibold">{success}</span>
               </div>
             )}
 
@@ -189,17 +206,15 @@ export default function Login({ setLogin }) {
 
       {/* Reset Password Modal */}
       {showReset && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center px-4">
-
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
 
             <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-6 flex justify-between items-center">
               <h2 className="text-2xl font-bold text-white">Reset Password</h2>
-              <button onClick={() => setShowReset(false)} className="text-white">✖</button>
+              <button onClick={() => setShowReset(false)} className="text-white text-xl">✖</button>
             </div>
 
             <div className="p-6 bg-gradient-to-br from-slate-50 to-orange-50">
-
               <p className="text-sm text-gray-600 mb-4">
                 Enter your username and new password to reset your account
               </p>
@@ -252,7 +267,6 @@ export default function Login({ setLogin }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }
