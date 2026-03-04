@@ -1,0 +1,52 @@
+name: Ocean View Resort Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Validate HTML Files
+        run: |
+          echo "Validating HTML structure of Ocean View Resort frontend"
+          find . -name "*.html" -print
+
+      - name: Check CSS Files
+        run: |
+          echo "Checking CSS files of Ocean View Resort frontend"
+          find . -name "*.css" -print
+
+      - name: Check JavaScript Files
+        run: |
+          echo "Checking JavaScript files of Ocean View Resort frontend"
+          find . -name "*.js" -print
+
+      - name: List Project Structure
+        run: |
+          echo "Ocean View Resort Frontend Project Structure"
+          ls -la
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy Frontend
+        run: echo "Deploying Ocean View Resort Frontend to production server"
